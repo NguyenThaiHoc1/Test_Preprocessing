@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import PossibleChar
+import DetectChars
 
 GAUSSIAN_SMOOTH_FILTER_SIZE = (5, 5)
 ADAPTIVE_THRESH_BLOCK_SIZE = 19
@@ -9,6 +11,8 @@ ADAPTIVE_THRESH_WEIGHT = 9
 
 
 def preprocess(imgOriginal):
+    print ("this shape of img Original: {0}".format(imgOriginal.shape))
+
     imgGrayscale = extractValue(imgOriginal)
 
     imgMaxContrastGrayscale = maximizeContrast(imgGrayscale)
@@ -32,16 +36,30 @@ def extractValue(imgOriginal):
 
     imgHue, imgSaturation, imgValue = cv2.split(imgHSV)
 
+    cv2.imwrite("./images/0a.png", imgHue)
+
+    cv2.imwrite("./images/0b.png", imgSaturation)
+
+    cv2.imwrite("./images/0c.png", imgValue)
+
     return imgValue
 
 def maximizeContrast(imgGrayscale):
+    print ("this shape of img GrayScale: {0}".format(imgGrayscale.shape))
     structuringElement = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
 
     imgTopHat = cv2.morphologyEx(imgGrayscale, cv2.MORPH_TOPHAT, structuringElement)
     imgBlackHat = cv2.morphologyEx(imgGrayscale, cv2.MORPH_BLACKHAT, structuringElement)
 
+    cv2.imwrite("./images/0d-1.png", imgTopHat)
+    cv2.imwrite("./images/0d-2.png", imgBlackHat)
+
     imgGrayscalePlusTopHat = cv2.add(imgGrayscale, imgTopHat)
     imgGrayscalePlusTopHatMinusBlackHat = cv2.subtract(imgGrayscalePlusTopHat, imgBlackHat)
+
+    cv2.imwrite("./images/0d-3.png", imgGrayscalePlusTopHat)
+
+    cv2.imwrite("./images/0d-4.png", imgGrayscalePlusTopHatMinusBlackHat)
 
     return imgGrayscalePlusTopHatMinusBlackHat
 
@@ -75,8 +93,8 @@ def findPossibleCharsInScene(imgThresh):
 
     print("\nstep 2 - len(contours) = " + str(len(contours)))                       # 2362 with MCLRNF1 image
     print("step 2 - intCountOfPossibleChars = " + str(intCountOfPossibleChars))       # 131 with MCLRNF1 image
-    cv2.imwrite("./images/1b.png", imgContours)
-
+    cv2.imwrite("./images/2b.png", imgContours)
+    print (intCountOfPossibleChars)
     return listOfPossibleChars
 
 
